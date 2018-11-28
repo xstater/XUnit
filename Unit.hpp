@@ -12,19 +12,13 @@ namespace unit{
         using ratio = Ratio;
         using type_tag = TypeTag;
     
-        Unit(int64 count):m_count(count){}
+        Unit(double count):m_count(count){}
         ~Unit() = default;
-        
-        int64 count()const noexcept{ return m_count; }
-        operator float()const noexcept{
-            return static_cast<float>(m_count) * static_cast<float>(Ratio::num) / static_cast<float>(Ratio::den);
-        }
-        operator double()const noexcept{
-            return static_cast<double>(m_count) * static_cast<double>(Ratio::num) / static_cast<double>(Ratio::den);
-        }
+
+        double value()const noexcept{ return m_count; }
     protected:
     private:
-        int64 m_count;
+        double m_count;
     };
     
     class BinaryUnit{};
@@ -64,15 +58,18 @@ namespace unit{
     using gram = Unit<MassUnit,std::ratio<1,1>>;
     using kilogram = Unit<MassUnit,std::ratio<1000,1>>;
     using ton = Unit<MassUnit,std::ratio<1000000,1>>;
+
+    using PI = std::ratio<31415926535897932,10000000000000000>;
     
     class AngleUnit{};
-    using degree = Unit<AngleUnit,std::ratio<1,1>>;
+    using radian = Unit<AngleUnit,std::ratio<1,1>>;
+    using degree = Unit<AngleUnit,std::ratio_divide<std::ratio<180,1>,PI>>;
 }
 
 template <class Dst,class Src>
 constexpr Dst unit_cast(const Src &src){
     static_assert(std::is_same<typename Dst::type_tag,typename Src::type_tag>::value,"Cannot convert unit!");
-    return Dst(src.count() * Src::ratio::num / Src::ratio::den * Dst::ratio::den / Dst::ratio::num);
+    return Dst(src.value() * Src::ratio::num / Src::ratio::den * Dst::ratio::den / Dst::ratio::num);
 }
 
 #endif
