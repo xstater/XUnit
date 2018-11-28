@@ -4,8 +4,6 @@
 #include <ratio>
 
 namespace unit{
-    using int64 = long long;
-    
     template <class TypeTag,class Ratio>
     class Unit{
     public:
@@ -21,16 +19,16 @@ namespace unit{
         double m_count;
     };
     
-    class BinaryUnit{};
-    using Byte = Unit<BinaryUnit,std::ratio<1,1>>;
-    using KB = Unit<BinaryUnit,std::ratio<1024,1>>;
-    using MB = Unit<BinaryUnit,std::ratio<1048576,1>>;
-    using GB = Unit<BinaryUnit,std::ratio<1073741824,1>>;
-    using TB = Unit<BinaryUnit,std::ratio<1099511627776,1>>;
-    using bit = Unit<BinaryUnit,std::ratio<1,8>>;
-    using Kb = Unit<BinaryUnit,std::ratio<1024,8>>;
-    using Mb = Unit<BinaryUnit,std::ratio<1048576,8>>;
-    using Gb = Unit<BinaryUnit,std::ratio<1073741824,8>>;
+    class DataUnit{};
+    using Byte = Unit<DataUnit,std::ratio<1,1>>;
+    using KB = Unit<DataUnit,std::ratio<1024,1>>;
+    using MB = Unit<DataUnit,std::ratio<1048576,1>>;
+    using GB = Unit<DataUnit,std::ratio<1073741824,1>>;
+    using TB = Unit<DataUnit,std::ratio<1099511627776,1>>;
+    using bit = Unit<DataUnit,std::ratio<1,8>>;
+    using Kb = Unit<DataUnit,std::ratio<1024,8>>;
+    using Mb = Unit<DataUnit,std::ratio<1048576,8>>;
+    using Gb = Unit<DataUnit,std::ratio<1073741824,8>>;
     
     class TimeUnit{};
     using nanosecond = Unit<TimeUnit,std::ratio<1,1000000000>>;
@@ -41,6 +39,7 @@ namespace unit{
     using hour = Unit<TimeUnit,std::ratio<3600,1>>;
     using day = Unit<TimeUnit,std::ratio<86400,1>>;
     using week = Unit<TimeUnit,std::ratio<604800,1>>;
+    using year = Unit<TimeUnit,std::ratio<31536000,1>>;
     
     class LengthUnit{};
     using nanometer = Unit<LengthUnit,std::ratio<1,1000000000>>;
@@ -63,7 +62,8 @@ namespace unit{
     
     class AngleUnit{};
     using radian = Unit<AngleUnit,std::ratio<1,1>>;
-    using degree = Unit<AngleUnit,std::ratio_divide<std::ratio<180,1>,PI>>;
+    using degree = Unit<AngleUnit,std::ratio_divide<PI,std::ratio<180,1>>>;
+    
 }
 
 template <class Dst,class Src>
