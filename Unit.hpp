@@ -13,7 +13,7 @@ namespace unit{
         Unit(double count):m_count(count){}
         ~Unit() = default;
 
-        double value()const noexcept{ return m_count; }
+        double &value()const noexcept{ return m_count; }
     protected:
     private:
         double m_count;
