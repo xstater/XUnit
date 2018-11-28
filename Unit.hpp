@@ -13,8 +13,8 @@ namespace unit{
         Unit(double count):m_count(count){}
         ~Unit() = default;
 
-        double &value()noexcept{ return m_count; }
-        const double &value()const noexcept{ return m_count; }
+        double value()const noexcept{ return m_count; }
+        void set(double cnt)noexcept{ m_count = cnt; }
     protected:
     private:
         double m_count;
