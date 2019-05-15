@@ -24,7 +24,6 @@ namespace unit{
             m_value = value * Ratio::num / Ratio::den;
             return *this;
         }
-
         template <class Unit1>
         constexpr Unit &operator=(const Unit1 &unit){
             m_value = unit.base_value();
