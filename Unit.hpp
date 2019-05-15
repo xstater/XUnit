@@ -20,6 +20,56 @@ namespace unit{
             :m_value(value * Ratio::num / Ratio::den){}
         ~Unit() = default;
 
+        constexpr Unit &operator=(double value){
+            m_value = value * Ratio::num / Ratio::den;
+            return *this;
+        }
+
+        template <class Unit1>
+        constexpr Unit &operator=(const Unit1 &unit){
+            m_value = unit.base_value();
+            return *this;
+        }
+        
+        constexpr Unit &operator+=(double value){
+            m_value += value * Ratio::num / Ratio::den;
+            return *this;
+        }
+        constexpr Unit &operator-=(double value){
+            m_value -= value * Ratio::num / Ratio::den;
+            return *this;
+        }
+        constexpr Unit &operator*=(double value){
+            m_value *= value * Ratio::num / Ratio::den;
+            return *this;
+        }
+        constexpr Unit &operator/=(double value){
+            m_value /= value * Ratio::num / Ratio::den;
+            return *this;
+        }
+
+        template <class Unit1>
+        constexpr Unit &operator+=(const Unit1 &unit){
+            m_value += unit.base_value();
+            return *this;
+        }
+        template <class Unit1>
+        constexpr Unit &operator-=(const Unit1 &unit){
+            m_value -= unit.base_value();
+            return *this;
+        }
+        template <class Unit1>
+        constexpr Unit &operator*=(const Unit1 &unit){
+            m_value *= unit.base_value();
+            return *this;
+        }
+        template <class Unit1>
+        constexpr Unit &operator/=(const Unit1 &unit){
+            m_value /= unit.base_value();
+            return *this;
+        }
+
+
         constexpr double base_value()const noexcept{
             return m_value;
         }
