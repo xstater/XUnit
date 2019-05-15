@@ -3,22 +3,67 @@
 
 #include <ratio>
 
+#define XUNIT_EPS 1e-7
+
 namespace unit{
+    constexpr double abs(double value){
+        return value > 0 ? value : -value;
+    }
+
     template <class TypeTag,class Ratio>
     class Unit{
     public:
         using ratio = Ratio;
         using type_tag = TypeTag;
     
-        Unit(double count):m_count(count){}
+        explicit constexpr Unit(double value)
+            :m_value(value * Ratio::num / Ratio::den){}
         ~Unit() = default;
 
-        double value()const noexcept{ return m_count; }
-        void set(double cnt)noexcept{ m_count = cnt; }
+        constexpr double base_value()const noexcept{
+            return m_value;
+        }
+
+        constexpr double value()const noexcept{
+            return m_value * Ratio::den / Ratio::num;
+        }
     protected:
     private:
-        double m_count;
+        double m_value;
     };
+    
+    
+
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator==(const Unit<TypeTag,Ratio1> &unit_lhs,
+                              const Unit<TypeTag,Ratio2> &unit_rhs){
+        return abs(unit_lhs.base_value() - unit_rhs.base_value()) < XUNIT_EPS;
+    }
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator!=(const Unit<TypeTag,Ratio1> &unit_lhs,
+                              const Unit<TypeTag,Ratio2> &unit_rhs){
+        return abs(unit_lhs.base_value() - unit_rhs.base_value()) > XUNIT_EPS;
+    }
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator<(const Unit<TypeTag,Ratio1> &unit_lhs,
+                             const Unit<TypeTag,Ratio2> &unit_rhs){
+        return unit_lhs.base_value() < unit_rhs.base_value();
+    }
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator<=(const Unit<TypeTag,Ratio1> &unit_lhs,
+                             const Unit<TypeTag,Ratio2> &unit_rhs){
+        return unit_lhs.base_value() <= unit_rhs.base_value();
+    }
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator>(const Unit<TypeTag,Ratio1> &unit_lhs,
+                             const Unit<TypeTag,Ratio2> &unit_rhs){
+        return unit_lhs.base_value() > unit_rhs.base_value();
+    }
+    template <class TypeTag,class Ratio1,class Ratio2>
+    constexpr bool operator>=(const Unit<TypeTag,Ratio1> &unit_lhs,
+                             const Unit<TypeTag,Ratio2> &unit_rhs){
+        return unit_lhs.base_value() >= unit_rhs.base_value();
+    }
     
     class DataUnit{};
     using Byte = Unit<DataUnit,std::ratio<1,1>>;
@@ -64,13 +109,14 @@ namespace unit{
     class AngleUnit{};
     using radian = Unit<AngleUnit,std::ratio<1,1>>;
     using degree = Unit<AngleUnit,std::ratio_divide<PI,std::ratio<180,1>>>;
-    
+
+    template <class Dst,class Src>
+    constexpr Dst unit_cast(const Src &src){
+        static_assert(std::is_same<typename Dst::type_tag,typename Src::type_tag>::value,"Cannot convert unit!");
+        return Dst(src.base_value() * Dst::ratio::den / Dst::ratio::num);
+    }
 }
 
-template <class Dst,class Src>
-constexpr Dst unit_cast(const Src &src){
-    static_assert(std::is_same<typename Dst::type_tag,typename Src::type_tag>::value,"Cannot convert unit!");
-    return Dst(src.value() * Src::ratio::num / Src::ratio::den * Dst::ratio::den / Dst::ratio::num);
-}
+#undef XUNIT_EPS
 
 #endif
