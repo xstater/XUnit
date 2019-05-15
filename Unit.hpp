@@ -31,37 +31,68 @@ namespace unit{
     private:
         double m_value;
     };
-    
-    
 
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator==(const Unit<TypeTag,Ratio1> &unit_lhs,
-                              const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Dst,class Src>
+    constexpr Dst unit_cast(const Src &src){
+        static_assert(std::is_same<typename Dst::type_tag,typename Src::type_tag>::value,"Cannot convert unit!");
+        return Dst(src.base_value() * Dst::ratio::den / Dst::ratio::num);
+    }
+
+    template <class Unit1,class Unit2>
+    constexpr Unit1 operator+(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        return Unit1(unit_lhs.value() + unit_cast<Unit1>(unit_rhs).value());
+    }
+    template <class Unit1,class Unit2>
+    constexpr Unit1 operator-(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        return Unit1(unit_lhs.value() - unit_cast<Unit1>(unit_rhs).value());
+    }
+    template <class Unit1,class Unit2>
+    constexpr Unit1 operator*(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        return Unit1(unit_lhs.value() * unit_cast<Unit1>(unit_rhs).value());
+    }
+    template <class Unit1,class Unit2>
+    constexpr Unit1 operator/(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        return Unit1(unit_lhs.value() / unit_cast<Unit1>(unit_rhs).value());
+    }
+
+    template <class Unit1,class Unit2>
+    constexpr bool operator==(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return abs(unit_lhs.base_value() - unit_rhs.base_value()) < XUNIT_EPS;
     }
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator!=(const Unit<TypeTag,Ratio1> &unit_lhs,
-                              const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Unit1,class Unit2>
+    constexpr bool operator!=(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return abs(unit_lhs.base_value() - unit_rhs.base_value()) > XUNIT_EPS;
     }
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator<(const Unit<TypeTag,Ratio1> &unit_lhs,
-                             const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Unit1,class Unit2>
+    constexpr bool operator<(const Unit1 &unit_lhs,
+                              const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return unit_lhs.base_value() < unit_rhs.base_value();
     }
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator<=(const Unit<TypeTag,Ratio1> &unit_lhs,
-                             const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Unit1,class Unit2>
+    constexpr bool operator<=(const Unit1 &unit_lhs,
+                             const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return unit_lhs.base_value() <= unit_rhs.base_value();
     }
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator>(const Unit<TypeTag,Ratio1> &unit_lhs,
-                             const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Unit1,class Unit2>
+    constexpr bool operator>(const Unit1 &unit_lhs,
+                             const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return unit_lhs.base_value() > unit_rhs.base_value();
     }
-    template <class TypeTag,class Ratio1,class Ratio2>
-    constexpr bool operator>=(const Unit<TypeTag,Ratio1> &unit_lhs,
-                             const Unit<TypeTag,Ratio2> &unit_rhs){
+    template <class Unit1,class Unit2>
+    constexpr bool operator>=(const Unit1 &unit_lhs,
+                             const Unit2 &unit_rhs){
+        static_assert(std::is_same<typename Unit1::type_tag,typename Unit2::type_tag>::value,"Cannot compare!");
         return unit_lhs.base_value() >= unit_rhs.base_value();
     }
     
@@ -109,12 +140,6 @@ namespace unit{
     class AngleUnit{};
     using radian = Unit<AngleUnit,std::ratio<1,1>>;
     using degree = Unit<AngleUnit,std::ratio_divide<PI,std::ratio<180,1>>>;
-
-    template <class Dst,class Src>
-    constexpr Dst unit_cast(const Src &src){
-        static_assert(std::is_same<typename Dst::type_tag,typename Src::type_tag>::value,"Cannot convert unit!");
-        return Dst(src.base_value() * Dst::ratio::den / Dst::ratio::num);
-    }
 }
 
 #undef XUNIT_EPS
